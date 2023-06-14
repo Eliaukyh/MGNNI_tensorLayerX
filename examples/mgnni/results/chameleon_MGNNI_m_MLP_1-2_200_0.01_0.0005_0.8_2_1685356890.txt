@@ -1,0 +1,1 @@
+Namespace(batch_norm=1, best_model_path='./', dataset='chameleon', dataset_path='../', epochs=200, gamma=0.8, idx_split=2, ks='[1,2]', l2_coef=0.0005, lr=0.01, max_iter=300, model='MGNNI_m_MLP', path='./results/', seed=2023, self_loops=1, threshold=1e-06)

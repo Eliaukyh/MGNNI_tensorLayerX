@@ -1,0 +1,5 @@
+Namespace(batch_norm=1, best_model_path='./', dataset='chameleon', dataset_path='../', epochs=200, gamma=0.8, idx_split=2, ks='[1,2]', l2_coef=0.0005, lr=0.01, max_iter=300, model='MGNNI_m_MLP', path='./results/', self_loops=1, threshold=1e-06)
+Epoch [001]   train loss: 1.6091  val acc: 0.2757  test acc: 0.2917
+Epoch [002]   train loss: 1.6022  val acc: 0.2702  test acc: 0.2741
+Epoch [003]   train loss: 1.5897  val acc: 0.2771  test acc: 0.3026
+Epoch [004]   train loss: 1.5712  val acc: 0.2867  test acc: 0.3004
