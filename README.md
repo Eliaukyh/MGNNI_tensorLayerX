@@ -1,0 +1,2 @@
+# MGNNI_tensorLayerX
+基于TensorLayerX框架实现的的MGNNI模型
