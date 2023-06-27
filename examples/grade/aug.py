@@ -10,7 +10,10 @@ def get_sim(z1, z2):
     '''
     z1 = tlx.ops.l2_normalize(z1, axis=1)
     z2 = tlx.ops.l2_normalize(z2, axis=1)
-    return tlx.ops.matmul(z1, tlx.ops.transpose(z2))
+
+    z3 = tlx.ops.transpose(z2)
+
+    return tlx.ops.matmul(z1, z3)
 
 
 def get_node_dist(edge_index, num_nodes):

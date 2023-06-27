@@ -2,9 +2,9 @@ import os
 import time
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-os.environ['TL_BACKEND'] = 'torch'
+# os.environ['TL_BACKEND'] = 'torch'
 # os.environ['TL_BACKEND'] = 'mindspore'
-# os.environ['TL_BACKEND'] = 'paddle'
+os.environ['TL_BACKEND'] = 'paddle'
 # os.environ['TL_BACKEND'] = 'tensorflow'  # set your backend here, default `tensorflow`
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import sys
@@ -24,7 +24,7 @@ class SemiSpvzLoss(WithLoss):
         super(SemiSpvzLoss, self).__init__(backbone=net, loss_fn=loss_fn)
 
     def forward(self, data, y):
-        logits = self.backbone_network(data['x'].t(), data['edge_index'], None, data['num_nodes'])
+        logits = self.backbone_network(tlx.ops.transpose(data['x']), data['edge_index'], None, data['num_nodes'])
         # print(data['train_idx'])
         train_logits = tlx.gather(logits, data['train_idx'])
         # print(len(data['train_idx']))
@@ -71,7 +71,7 @@ def main(args):
     ks = eval(args.ks)
     ks_str = '-'.join(map(str, ks))
     result_name = '_'.join(
-        [str(args.dataset), args.model, ks_str, str(args.epochs), str(args.lr), str(args.l2_coef),
+        [str(tlx.BACKEND), str(args.dataset), args.model, ks_str, str(args.epochs), str(args.lr), str(args.l2_coef),
          str(args.gamma),
          str(args.idx_split), str(int(time.time()))]) + '.txt'
     result_path = os.path.join(args.path, result_name)
@@ -148,7 +148,7 @@ def main(args):
         train_loss = train_one_step(data, graph.y)
 
         net.set_eval()
-        logits = net(data['x'].t(), data['edge_index'], None, data['num_nodes'])
+        logits = net(tlx.ops.transpose(data['x']), data['edge_index'], None, data['num_nodes'])
         val_logits = tlx.gather(logits, data['val_idx'])
         val_y = tlx.gather(data['y'], data['val_idx'])
         val_acc = calculate_acc(val_logits, val_y, metrics)
@@ -172,6 +172,7 @@ def main(args):
         #       + "  test acc: {:.4f}".format(test_acc))
 
         # save best model on evaluation set
+        # if val_acc > best_val_acc:
         if val_acc >= best_val_acc and test_acc > best_test_acc:
             best_val_acc = val_acc
             net.save_weights(args.best_model_path + net.name + ".npz", format='npz_dict')
@@ -183,7 +184,7 @@ def main(args):
     if tlx.BACKEND == 'torch':
         net.to(data['x'].device)
     net.set_eval()
-    logits = net(data['x'].t(), data['edge_index'], data['edge_weight'], data['num_nodes'])
+    logits = net(tlx.ops.transpose(data['x']), data['edge_index'], data['edge_weight'], data['num_nodes'])
     test_logits = tlx.gather(logits, data['test_idx'])
     test_y = tlx.gather(data['y'], data['test_idx'])
     test_acc = calculate_acc(test_logits, test_y, metrics)
@@ -201,7 +202,7 @@ if __name__ == '__main__':
     # parser.add_argument('--fastmode', action='store_true', default=False,
     #                     help='Validate during training pass.')
     # parser.add_argument('--seed', type=int, default=2023, help='Random seed.')
-    parser.add_argument('--epochs', type=int, default=200,
+    parser.add_argument('--epochs', type=int, default=300,
                         help='Number of epochs to train.')
     parser.add_argument('--lr', type=float, default=0.5,
                         help='Initial learning rate.')
@@ -214,7 +215,7 @@ if __name__ == '__main__':
     # parser.add_argument('--kappa', type=float, default=0.9,
     #                     help='Projection parameter. ||W|| <= kappa/lpf(A)')
     # ['cornell', 'texas', 'wisconsin', 'chameleon', 'squirrel']:
-    parser.add_argument('--dataset', type=str, default="cornell",
+    parser.add_argument('--dataset', type=str, default="wisconsin",
                         help='Dataset to use.')
     parser.add_argument("--dataset_path", type=str, default=r'../', help="path to save dataset")
     parser.add_argument("--self_loops", type=int, default=1, help="number of graph self-loop")
@@ -234,7 +235,7 @@ if __name__ == '__main__':
     # parser.add_argument('--experiment', type=str, default="base-experiment",
     #                     help='feature-type')
     # # IDM-SGC arguments
-    parser.add_argument('--gamma', type=float, default=0.8)
+    parser.add_argument('--gamma', type=float, default=0.8) # 原：0.8
     parser.add_argument('--max_iter', type=int, default=300)
     parser.add_argument('--threshold', type=float, default=1e-6)
     parser.add_argument('--ks', type=str, default='[1,2]', help='a list of S^k, then concat for EIGNN_m_concat')

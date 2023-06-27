@@ -1,5 +1,5 @@
 import tensorlayerx as tlx
-from memory_profiler import profile
+# from memory_profiler import profile
 
 from gammagl.utils import degree
 from gammagl.layers.conv import MessagePassing
@@ -81,7 +81,7 @@ class GCNConv(MessagePassing):
             self.bias = self._get_weights("bias", shape=(1,self.out_channels), init=initor)
 
 
-    @profile
+    # @profile
     def forward(self, x, edge_index, edge_weight=None, num_nodes=None):
         x = self.linear(x)
         src, dst = edge_index[0], edge_index[1]

@@ -1,5 +1,5 @@
 import os
-# os.environ['TL_BACKEND'] = 'torch'
+os.environ['TL_BACKEND'] = 'torch'
 # os.environ['CUDA_VISIBLE_DEVICES']=' '
 # set your backend here, default 'tensorflow', you can choose 'paddle'、'tensorflow'、'torch'
 
@@ -24,7 +24,7 @@ class Unsupervised_Loss(WithLoss):
         return loss
 
 def main(args):
-    tlx.set_device("GPU", args.gpu_id)
+    # tlx.set_device("GPU", args.gpu_id)
     lr = args.lr
     hid_dim = args.hid_dim
     out_dim = args.out_dim
@@ -77,11 +77,12 @@ def main(args):
 
 
 if __name__ == '__main__':
+    print('here!')
     # parameters setting
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument("--lr", type=float, default=0.001, help="learning rate")
-    parser.add_argument('--warmup', type=int, default=200, help='Warmup of training.')
+    parser.add_argument('--warmup', type=int, default=10, help='Warmup of training.') # 200
     parser.add_argument('--mode', type=str, default='full')
     parser.add_argument('--act_fn', type=str, default='relu')
     parser.add_argument('--threshold', type=int, default=9, help='Definition of low-degree nodes.')
@@ -98,4 +99,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='cora')
     parser.add_argument("--dataset_path", type=str, default=r'../', help="path to save dataset")
     args = parser.parse_args()
+
+    print('emmmm')
     main(args)
