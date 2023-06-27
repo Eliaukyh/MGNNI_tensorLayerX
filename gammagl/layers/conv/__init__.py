@@ -27,7 +27,7 @@ from .edgeconv import EdgeConv
 from .hpn_conv import HPNConv
 from .hetero_wrapper import HeteroConv
 from .gmm_conv import GMMConv
-from .MGNNI_iter import MGNNI_m_iter
+from .mgnni_m_iter import MGNNI_m_iter
 
 __all__ = [
     'MessagePassing',
